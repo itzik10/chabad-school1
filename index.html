@@ -15,6 +15,7 @@
 
         body { font-family: 'Assistant', sans-serif; margin: 0; background-color: var(--bg); color: #333; }
         
+        /* כותרת עליונה כחולה */
         header { 
             background: var(--primary); 
             color: white; 
@@ -25,7 +26,7 @@
         header h1 { margin: 0; font-size: 2.2rem; }
         header p { margin: 10px 0 0; opacity: 0.9; }
 
-        /* סרגל ניווט - הלוגו והכפתורים בשורה אחת במרכז */
+        /* סרגל ניווט לבן - מקובע לראש הדף */
         nav {
             background: var(--white); 
             position: sticky; 
@@ -36,27 +37,34 @@
             align-items: center; 
             justify-content: center; 
             flex-wrap: nowrap; 
-            padding: 8px 20px; 
+            padding: 0 20px;      /* ביטול ריווח אנכי כדי שהפס לא יתרחב */
             gap: 12px;
-            min-height: 65px;
+            height: 70px;         /* גובה קבוע וקשיח לפס הלבן */
+            overflow: visible;    /* מאפשר ללוגו לחרוג מהפס מבלי להגדיל אותו */
         }
 
-        /* עיצוב הלוגו בתוך הפס הלבן */
+        /* עיצוב הלוגו - פתרון השוליים השקופים */
         .school-logo {
-            max-height: 200px; 
-            margin-right: 10px; /* רווח קטן מהכפתור האחרון */
+            max-height: 200px;    /* גובה מקסימלי גדול כדי לפצות על השקיפות בתמונה */
+            width: auto;
+            margin: -70px 0;      /* Margin שלילי ש"אוכל" את השטח הריק בתמונה ומונע מהפס להתרחב */
+            display: block;
+            z-index: 1010;
+            position: relative;
         }
 
+        /* עיצוב כפתורי הכיתות */
         nav button {
             background: #eee; border: none; padding: 10px 18px; border-radius: 25px;
             cursor: pointer; font-weight: bold; font-family: 'Assistant'; transition: 0.3s; color: var(--primary);
-            white-space: nowrap;
+            white-space: nowrap; /* מונע מהטקסט בכפתור לרדת שורה */
         }
 
         nav button.active { background: var(--primary); color: white; }
 
         .container { max-width: 1100px; margin: 30px auto; padding: 0 15px; }
 
+        /* כרטיס התוכן (קנבה) */
         .canvas-card {
             background: var(--white); border-radius: 15px; overflow: hidden;
             box-shadow: 0 8px 30px rgba(0,0,0,0.1); display: none; animation: fadeIn 0.5s ease;
@@ -68,15 +76,22 @@
         .class-header h2 { margin: 0; color: var(--primary); font-size: 1.8rem; }
         .class-header h3 { margin: 8px 0 0; color: #666; font-weight: normal; }
 
+        /* מסגרת להטמעת ה-iframe של קנבה */
         .embed-wrapper { position: relative; width: 100%; height: 0; padding-top: 56.25%; background: #f9f9f9; }
         .embed-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
-        footer { text-align: center; padding: 30px; color: #888; font-size: 0.9rem; }
+        footer { text-align: center; padding: 40px; color: #888; font-size: 0.9rem; border-top: 1px solid #ddd; margin-top: 50px; }
 
-        /* התאמה לנייד */
+        /* התאמה למובייל */
         @media (max-width: 768px) {
-            nav { flex-wrap: wrap; justify-content: center; padding: 10px; }
-            .school-logo { max-height: 45px; order: -1; width: 100%; object-fit: contain; margin: 0 0 10px 0; }
+            nav { flex-wrap: wrap; height: auto; max-height: none; padding: 10px; }
+            .school-logo { 
+                max-height: 120px; 
+                margin: -30px auto 0 auto; 
+                order: -1; /* הלוגו יופיע ראשון בטלפון */
+                width: 100%; 
+                object-fit: contain; 
+            }
             header h1 { font-size: 1.6rem; }
         }
 
@@ -94,16 +109,18 @@
     </nav>
 
 <div class="container" id="classContent">
-    <div id="loadingStatus" style="text-align:center; padding:100px;">טוען נתונים מהמערכת...</div>
+    <div id="loadingStatus" style="text-align:center; padding:100px; font-size: 1.2rem;">טוען נתונים מהמערכת...</div>
 </div>
 
 <footer>
-    © כל הזכויות שמורות לאיציק פלדמן| ניהול תוכן: צוות המחנכים
+    © All Rights Reserved to Itzik Feldman | בית ספר חב"ד כפר סבא | 2026
 </footer>
 
 <script>
+    // קישור ה-CSV מהגוגל שיטס שלך
     const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRzl6akHPYPPZzEqtKtIb1xUfuaGqB_wKRGhZmN76ZXdJQE1eJxUJFWWpDfclLZrWLhglK1tbCoQwfU/pub?output=csv';
 
+    // הגדרת נתוני הכיתות - ניתן לשנות שמות מורים כאן
     const classConfig = [
         { id: "grade1", letter: "א", name: "כיתה א'", teacher: "המורה דניאלה" },
         { id: "grade2", letter: "ב", name: "כיתה ב'", teacher: "המורה חמי" },
@@ -115,19 +132,21 @@
 
     async function initSite() {
         try {
-            const response = await fetch(SHEET_CSV_URL + '&cache=' + new Date().getTime());
+            // משיכת הנתונים מהאקסל עם מנגנון למניעת שמירה בזיכרון ישן (Cache)
+            const response = await fetch(SHEET_CSV_URL + '&t=' + new Date().getTime());
             const csvText = await response.text();
             const lines = csvText.split(/\r?\n/);
             
             const menuContainer = document.getElementById('classMenu');
             const contentContainer = document.getElementById('classContent');
             
-            menuContainer.innerHTML = ''; // מנקה את התפריט כדי לבנות מחדש
+            menuContainer.innerHTML = ''; 
             contentContainer.innerHTML = ''; 
 
-            // יצירת הכפתורים
+            // יצירת הכפתורים והכרטיסים לכל כיתה
             classConfig.forEach((config) => {
                 let linkFromSheet = "";
+                // חיפוש הקישור בשורות האקסל לפי אות הכיתה בטור א'
                 for (let i = 1; i < lines.length; i++) {
                     const columns = lines[i].split(',');
                     if (columns[0] && columns[0].trim().includes(config.letter)) {
@@ -136,13 +155,15 @@
                     }
                 }
 
+                // בניית כפתור בתפריט
                 const btn = document.createElement('button');
                 btn.innerText = config.name;
                 btn.id = `btn-${config.id}`;
                 btn.onclick = () => showGrade(config.id);
-                if(config.id === "grade4") btn.classList.add('active');
+                if(config.id === "grade4") btn.classList.add('active'); // ברירת מחדל כיתה ד'
                 menuContainer.appendChild(btn);
 
+                // בניית כרטיס התצוגה
                 const card = document.createElement('div');
                 card.className = `canvas-card ${config.id === "grade4" ? 'active' : ''}`;
                 card.id = `card-${config.id}`;
@@ -154,6 +175,7 @@
                     </div>
                 `;
 
+                // אם נמצא קישור תקין, נטמיע את ה-Iframe
                 if(linkFromSheet && linkFromSheet.toLowerCase().startsWith('http')) {
                     contentHTML += `
                         <div class="embed-wrapper">
@@ -172,18 +194,19 @@
                 contentContainer.appendChild(card);
             });
 
-            // הוספת הלוגו בסוף התפריט (צד שמאל של הכפתורים)
+            // הוספת הלוגו בסוף התפריט (מצד שמאל של הכפתורים)
             const logoImg = document.createElement('img');
-            logoImg.src = 'logo.png.png'; // וודא שזה השם המדויק ב-GitHub
+            logoImg.src = 'logo.png.png'; // שם הקובץ ב-GitHub
             logoImg.alt = 'לוגו בית הספר';
             logoImg.className = 'school-logo';
             menuContainer.appendChild(logoImg);
 
         } catch (e) {
-            document.getElementById('loadingStatus').innerText = "שגיאה בחיבור לנתונים.";
+            document.getElementById('loadingStatus').innerText = "שגיאה בחיבור לנתוני גוגל. וודא שהטבלה פורסמה כ-CSV.";
         }
     }
 
+    // פונקציה למעבר בין כיתות
     function showGrade(id) {
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
         const activeBtn = document.getElementById(`btn-${id}`);
@@ -192,13 +215,14 @@
         document.querySelectorAll('.canvas-card').forEach(c => c.classList.remove('active'));
         const activeCard = document.getElementById(`card-${id}`);
         if(activeCard) activeCard.classList.add('active');
+        
+        // גלילה חלקה לראש התוכן במובייל
+        if(window.innerWidth < 768) {
+             window.scrollTo({ top: document.querySelector('nav').offsetTop, behavior: 'smooth' });
+        }
     }
 
     initSite();
 </script>
 </body>
 </html>
-
-
-
-
