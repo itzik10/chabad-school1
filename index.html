@@ -7,134 +7,50 @@
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #1a4d80; /* כחול חב"ד */
-            --secondary: #f4b400; /* זהב */
+            --primary: #1a4d80;
+            --secondary: #f4b400;
             --bg: #f0f2f5;
             --white: #ffffff;
         }
 
-        body {
-            font-family: 'Assistant', sans-serif;
-            margin: 0;
-            background-color: var(--bg);
-            color: #333;
-        }
-
-        /* כותרת עליונה */
-        header {
-            background: var(--primary);
-            color: white;
-            padding: 40px 20px;
-            text-align: center;
-            border-bottom: 5px solid var(--secondary);
-        }
-
+        body { font-family: 'Assistant', sans-serif; margin: 0; background-color: var(--bg); color: #333; }
+        
+        header { background: var(--primary); color: white; padding: 40px 20px; text-align: center; border-bottom: 5px solid var(--secondary); }
         header h1 { margin: 0; font-size: 2.2rem; }
         header p { margin: 10px 0 0; opacity: 0.9; }
 
-        /* תפריט ניווט */
         nav {
-            background: var(--white);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            padding: 10px;
-            gap: 8px;
+            background: var(--white); position: sticky; top: 0; z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; justify-content: center;
+            flex-wrap: wrap; padding: 10px; gap: 8px;
         }
 
         nav button {
-            background: #eee;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: bold;
-            font-family: 'Assistant';
-            transition: 0.3s;
-            color: var(--primary);
+            background: #eee; border: none; padding: 10px 18px; border-radius: 25px;
+            cursor: pointer; font-weight: bold; font-family: 'Assistant'; transition: 0.3s; color: var(--primary);
         }
 
-        nav button.active {
-            background: var(--primary);
-            color: white;
-        }
+        nav button.active { background: var(--primary); color: white; }
 
-        nav button:hover {
-            background: #ddd;
-        }
-
-        nav button.active:hover {
-            background: var(--primary);
-        }
-
-        /* תוכן הכיתות */
-        .container {
-            max-width: 1100px;
-            margin: 30px auto;
-            padding: 0 15px;
-        }
+        .container { max-width: 1100px; margin: 30px auto; padding: 0 15px; }
 
         .canvas-card {
-            background: var(--white);
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
-            display: none;
-            animation: fadeIn 0.5s ease;
+            background: var(--white); border-radius: 15px; overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1); display: none; animation: fadeIn 0.5s ease;
         }
 
-        .canvas-card.active {
-            display: block;
-        }
+        .canvas-card.active { display: block; }
 
-        .class-header {
-            padding: 25px;
-            background: #fafafa;
-            border-bottom: 2px solid #eee;
-            text-align: right;
-        }
-
+        .class-header { padding: 25px; background: #fafafa; border-bottom: 2px solid #eee; }
         .class-header h2 { margin: 0; color: var(--primary); font-size: 1.8rem; }
         .class-header h3 { margin: 8px 0 0; color: #666; font-weight: normal; }
 
-        /* אזור ההטמעה */
-        .embed-wrapper {
-            position: relative;
-            width: 100%;
-            height: 0;
-            padding-top: 56.25%; /* יחס 16:9 */
-            background: #eee;
-        }
+        .embed-wrapper { position: relative; width: 100%; height: 0; padding-top: 56.25%; background: #f9f9f9; }
+        .embed-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
-        .embed-wrapper iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
+        footer { text-align: center; padding: 30px; color: #888; font-size: 0.9rem; }
 
-        footer {
-            text-align: center;
-            padding: 30px;
-            color: #888;
-            font-size: 0.9rem;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @media (max-width: 600px) {
-            header h1 { font-size: 1.6rem; }
-            nav button { padding: 8px 12px; font-size: 0.9rem; }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -146,115 +62,94 @@
 
 <nav id="classMenu"></nav>
 
-<div class="container" id="classContent"></div>
+<div class="container" id="classContent">
+    <div id="loadingStatus" style="text-align:center; padding:50px;">טוען נתונים מהטבלה...</div>
+</div>
 
 <footer>
-    © כל הזכויות שמורות לבית ספר חב"ד כפר סבא | נערך על ידי הרב איציק פלדמן
+    © כל הזכויות שמורות לבית ספר חב"ד כפר סבא | ניהול תוכן: צוות המחנכים
 </footer>
 
 <script>
-    /**
-     * רשימת הכיתות, המורים והקישורים
-     * ניתן לעדכן את ה-url בתוך הגרשיים לכל כיתה
-     **/
-    const classData = {
-        "grade1": { 
-            name: "כיתה א'", 
-            teacher: "המורה דניאלה", 
-            url: "" 
-        },
-        "grade2": { 
-            name: "כיתה ב'", 
-            teacher: "המורה חמי", 
-            url: "" 
-        },
-        "grade3": { 
-            name: "כיתה ג'", 
-            teacher: "הרב שניאור", 
-            url: "" 
-        },
-        "grade4": { 
-            name: "כיתה ד'", 
-            teacher: "הרב איציק", 
-            url: "https://www.canva.com/design/DAGqcSr6-X8/tAH9Zy6jN_-m3D5JTphF0Q/view?embed" 
-        },
-        "grade5": { 
-            name: "כיתה ה'", 
-            teacher: "הרב מאיר", 
-            url: "https://www.canva.com/design/DAHDSzjRsbs/9FyUGAehwsyZf9bVXJqwhA/view?embed" 
-        },
-        "grade6": { 
-            name: "כיתה ו'", 
-            teacher: "הרב יהודה", 
-            url: "https://www.canva.com/design/DAFxCKiH1qM/GSPRR6TP4BPgY34UzdiC9g/view?embed" 
-        }
+    // *** כאן אתה מדביק את הקישור שקיבלת מה-CSV של גוגל שיטס ***
+    const SHEET_CSV_URL = 'כאן_להדביק_את_הקישור_שלך';
+
+    const classConfig = {
+        "grade1": { name: "כיתה א'", teacher: "המורה דניאלה" },
+        "grade2": { name: "כיתה ב'", teacher: "המורה חמי" },
+        "grade3": { name: "כיתה ג'", teacher: "הרב שניאור" },
+        "grade4": { name: "כיתה ד'", teacher: "הרב איציק" },
+        "grade5": { name: "כיתה ה'", teacher: "הרב מאיר" },
+        "grade6": { name: "כיתה ו'", teacher: "הרב יהודה" }
     };
 
-    const menuContainer = document.getElementById('classMenu');
-    const contentContainer = document.getElementById('classContent');
-
-    function initSite() {
-        Object.keys(classData).forEach((key) => {
-            const item = classData[key];
-
-            // יצירת כפתור בתפריט
-            const btn = document.createElement('button');
-            btn.innerText = item.name;
-            btn.id = `btn-${key}`;
-            btn.onclick = () => showGrade(key);
+    async function initSite() {
+        try {
+            const response = await fetch(SHEET_CSV_URL);
+            const csvText = await response.text();
+            const lines = csvText.split('\n');
             
-            // כיתה ד' מוגדרת כפעילה ראשונה
-            if(key === "grade4") btn.classList.add('active');
-            menuContainer.appendChild(btn);
+            const menuContainer = document.getElementById('classMenu');
+            const contentContainer = document.getElementById('classContent');
+            contentContainer.innerHTML = ''; // מנקה את הודעת הטעינה
 
-            // יצירת כרטיס תוכן
-            const card = document.createElement('div');
-            card.className = `canvas-card ${key === "grade4" ? 'active' : ''}`;
-            card.id = `card-${key}`;
+            Object.keys(classConfig).forEach((key, index) => {
+                const config = classConfig[key];
+                // לוקח את הקישור מהשורה המתאימה באקסל (שורה 2 באקסל היא אינדקס 1 במערך)
+                const rowData = lines[index + 1] ? lines[index + 1].split(',') : [];
+                const linkFromSheet = rowData[1] ? rowData[1].trim() : "";
 
-            let contentHTML = `
-                <div class="class-header">
-                    <h2>${item.name}</h2>
-                    <h3>מחנך/ת: <strong>${item.teacher}</strong></h3>
-                </div>
-            `;
+                // יצירת כפתור
+                const btn = document.createElement('button');
+                btn.innerText = config.name;
+                btn.id = `btn-${key}`;
+                btn.onclick = () => showGrade(key);
+                if(key === "grade4") btn.classList.add('active');
+                menuContainer.appendChild(btn);
 
-            if(item.url) {
-                contentHTML += `
-                    <div class="embed-wrapper">
-                        <iframe src="${item.url}" allowfullscreen="allowfullscreen" loading="lazy"></iframe>
+                // יצירת כרטיס
+                const card = document.createElement('div');
+                card.className = `canvas-card ${key === "grade4" ? 'active' : ''}`;
+                card.id = `card-${key}`;
+
+                let contentHTML = `
+                    <div class="class-header">
+                        <h2>${config.name}</h2>
+                        <h3>מחנך/ת: <strong>${config.teacher}</strong></h3>
                     </div>
                 `;
-            } else {
-                contentHTML += `
-                    <div style="padding:80px; text-align:center; color: #888;">
-                        <p>התוכן לכיתה זו טרם עודכן.</p>
-                        <small>אנא בדקו שוב מאוחר יותר.</small>
-                    </div>
-                `;
-            }
 
-            card.innerHTML = contentHTML;
-            contentContainer.appendChild(card);
-        });
+                if(linkFromSheet && linkFromSheet.startsWith('http')) {
+                    contentHTML += `
+                        <div class="embed-wrapper">
+                            <iframe src="${linkFromSheet}" allowfullscreen="allowfullscreen" loading="lazy"></iframe>
+                        </div>
+                    `;
+                } else {
+                    contentHTML += `
+                        <div style="padding:80px; text-align:center; color: #888;">
+                            <p>התוכן לכיתה זו טרם עודכן בטבלה.</p>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = contentHTML;
+                contentContainer.appendChild(card);
+            });
+        } catch (e) {
+            document.getElementById('loadingStatus').innerText = "שגיאה בטעינת הטבלה. וודא שהקישור תקין ופורסם כ-CSV.";
+        }
     }
 
     function showGrade(key) {
-        // עדכון כפתור פעיל
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
         document.getElementById(`btn-${key}`).classList.add('active');
-
-        // עדכון כרטיס מוצג
         document.querySelectorAll('.canvas-card').forEach(c => c.classList.remove('active'));
         document.getElementById(`card-${key}`).classList.add('active');
-
-        // גלילה למעלה בתצוגת נייד
         window.scrollTo({ top: document.querySelector('nav').offsetTop - 20, behavior: 'smooth' });
     }
 
-    // הפעלת האתר
     initSite();
 </script>
-
 </body>
 </html>
