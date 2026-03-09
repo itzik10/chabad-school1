@@ -15,11 +15,17 @@
 
         body { font-family: 'Assistant', sans-serif; margin: 0; background-color: var(--bg); color: #333; }
         
-        header { background: var(--primary); color: white; padding: 40px 20px; text-align: center; border-bottom: 5px solid var(--secondary); }
+        header { 
+            background: var(--primary); 
+            color: white; 
+            padding: 40px 20px; 
+            text-align: center; 
+            border-bottom: 5px solid var(--secondary); 
+        }
         header h1 { margin: 0; font-size: 2.2rem; }
         header p { margin: 10px 0 0; opacity: 0.9; }
 
-        /* עיצוב סרגל הניווט שכולל את הלוגו */
+        /* סרגל ניווט - הלוגו והכפתורים בשורה אחת במרכז */
         nav {
             background: var(--white); 
             position: sticky; 
@@ -27,24 +33,25 @@
             z-index: 1000;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
             display: flex; 
-            align-items: center; /* יישור אנכי למרכז */
+            align-items: center; 
             justify-content: center; 
-            flex-wrap: wrap; 
-            padding: 5px 20px; 
-            gap: 15px;
-            min-height: 60px;
+            flex-wrap: nowrap; 
+            padding: 8px 20px; 
+            gap: 12px;
+            min-height: 65px;
         }
 
         /* עיצוב הלוגו בתוך הפס הלבן */
         .school-logo {
-            max-height: 50px; /* גובה שמתאים לפס הלבן */
+            max-height: 55px; 
             width: auto;
-            margin-left: auto; /* דוחף את הלוגו לימין בתוך ה-flex (בגלל RTL זה יראה בצד) */
+            margin-right: 10px; /* רווח קטן מהכפתור האחרון */
         }
 
         nav button {
             background: #eee; border: none; padding: 10px 18px; border-radius: 25px;
             cursor: pointer; font-weight: bold; font-family: 'Assistant'; transition: 0.3s; color: var(--primary);
+            white-space: nowrap;
         }
 
         nav button.active { background: var(--primary); color: white; }
@@ -67,9 +74,11 @@
 
         footer { text-align: center; padding: 30px; color: #888; font-size: 0.9rem; }
 
+        /* התאמה לנייד */
         @media (max-width: 768px) {
-            nav { justify-content: center; padding: 10px; }
-            .school-logo { margin: 0 auto 10px auto; width: 100%; text-align: center; max-height: 40px; }
+            nav { flex-wrap: wrap; justify-content: center; padding: 10px; }
+            .school-logo { max-height: 45px; order: -1; width: 100%; object-fit: contain; margin: 0 0 10px 0; }
+            header h1 { font-size: 1.6rem; }
         }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
@@ -83,15 +92,14 @@
 </header>
 
 <nav id="classMenu">
-    <img src="logo.png.png" alt="לוגו" class="school-logo">
-</nav>
+    </nav>
 
 <div class="container" id="classContent">
     <div id="loadingStatus" style="text-align:center; padding:100px;">טוען נתונים מהמערכת...</div>
 </div>
 
 <footer>
-    © כל הזכויות שמורות לבית ספר חב"ד כפר סבא/itzik feldman | ניהול תוכן: צוות המחנכים
+    © כל הזכויות שמורות לבית ספר חב"ד כפר סבא | ניהול תוכן: צוות המחנכים
 </footer>
 
 <script>
@@ -114,8 +122,11 @@
             
             const menuContainer = document.getElementById('classMenu');
             const contentContainer = document.getElementById('classContent');
+            
+            menuContainer.innerHTML = ''; // מנקה את התפריט כדי לבנות מחדש
             contentContainer.innerHTML = ''; 
 
+            // יצירת הכפתורים
             classConfig.forEach((config) => {
                 let linkFromSheet = "";
                 for (let i = 1; i < lines.length; i++) {
@@ -161,16 +172,27 @@
                 card.innerHTML = contentHTML;
                 contentContainer.appendChild(card);
             });
+
+            // הוספת הלוגו בסוף התפריט (צד שמאל של הכפתורים)
+            const logoImg = document.createElement('img');
+            logoImg.src = 'logo.png.png'; // וודא שזה השם המדויק ב-GitHub
+            logoImg.alt = 'לוגו בית הספר';
+            logoImg.className = 'school-logo';
+            menuContainer.appendChild(logoImg);
+
         } catch (e) {
-            document.getElementById('loadingStatus').innerText = "שגיאה בחיבור לנתוני גוגל.";
+            document.getElementById('loadingStatus').innerText = "שגיאה בחיבור לנתונים.";
         }
     }
 
     function showGrade(id) {
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        document.getElementById(`btn-${id}`).classList.add('active');
+        const activeBtn = document.getElementById(`btn-${id}`);
+        if(activeBtn) activeBtn.classList.add('active');
+        
         document.querySelectorAll('.canvas-card').forEach(c => c.classList.remove('active'));
-        document.getElementById(`card-${id}`).classList.add('active');
+        const activeCard = document.getElementById(`card-${id}`);
+        if(activeCard) activeCard.classList.add('active');
     }
 
     initSite();
