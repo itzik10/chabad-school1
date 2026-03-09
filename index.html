@@ -63,7 +63,7 @@
 <nav id="classMenu"></nav>
 
 <div class="container" id="classContent">
-    <div id="loadingStatus" style="text-align:center; padding:50px;">טוען נתונים מהטבלה...</div>
+    <div id="loadingStatus" style="text-align:center; padding:100px;">טוען נתונים מהמערכת...</div>
 </div>
 
 <footer>
@@ -71,54 +71,53 @@
 </footer>
 
 <script>
- <script>
+    // הקישור הישיר ל-CSV שלך
     const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRzl6akHPYPPZzEqtKtIb1xUfuaGqB_wKRGhZmN76ZXdJQE1eJxUJFWWpDfclLZrWLhglK1tbCoQwfU/pub?output=csv';
 
-    const classConfig = {
-        "grade1": { name: "כיתה א'", teacher: "המורה דניאלה" },
-        "grade2": { name: "כיתה ב'", teacher: "המורה חמי" },
-        "grade3": { name: "כיתה ג'", teacher: "הרב שניאור" },
-        "grade4": { name: "כיתה ד'", teacher: "הרב איציק" },
-        "grade5": { name: "כיתה ה'", teacher: "הרב מאיר" },
-        "grade6": { name: "כיתה ו'", teacher: "הרב יהודה" }
-    };
+    // הגדרות הכיתות והמורים
+    const classConfig = [
+        { id: "grade1", letter: "א", name: "כיתה א'", teacher: "המורה דניאלה" },
+        { id: "grade2", letter: "ב", name: "כיתה ב'", teacher: "המורה חמי" },
+        { id: "grade3", letter: "ג", name: "כיתה ג'", teacher: "הרב שניאור" },
+        { id: "grade4", letter: "ד", name: "כיתה ד'", teacher: "הרב איציק" },
+        { id: "grade5", letter: "ה", name: "כיתה ה'", teacher: "הרב מאיר" },
+        { id: "grade6", letter: "ו", name: "כיתה ו'", teacher: "הרב יהודה" }
+    ];
 
     async function initSite() {
         try {
-            const response = await fetch(SHEET_CSV_URL + '&t=' + new Date().getTime());
+            const response = await fetch(SHEET_CSV_URL + '&cache=' + new Date().getTime());
             const csvText = await response.text();
-            
-            // פיצול שורות בצורה חזקה
             const lines = csvText.split(/\r?\n/);
             
             const menuContainer = document.getElementById('classMenu');
             const contentContainer = document.getElementById('classContent');
             contentContainer.innerHTML = ''; 
 
-            Object.keys(classConfig).forEach((key, index) => {
-                const config = classConfig[key];
-                
-                // לוקח את השורה המתאימה (דילוג על כותרת)
-                const currentRow = lines[index + 1] || "";
-                
-                // ניקוי הקישור: לוקח את מה שאחרי הפסיק הראשון ומוריד גרשיים ורווחים
+            classConfig.forEach((config) => {
+                // חיפוש הקישור בטבלה לפי האות של הכיתה
                 let linkFromSheet = "";
-                if (currentRow.includes(',')) {
-                    linkFromSheet = currentRow.split(',')[1].replace(/["']/g, "").trim();
+                for (let i = 1; i < lines.length; i++) {
+                    const columns = lines[i].split(',');
+                    // אם הטור הראשון מכיל את האות של הכיתה (א, ב, ג...)
+                    if (columns[0] && columns[0].trim().includes(config.letter)) {
+                        linkFromSheet = columns[1] ? columns[1].replace(/["']/g, "").trim() : "";
+                        break;
+                    }
                 }
 
-                // יצירת הכפתור
+                // 1. יצירת כפתור בתפריט
                 const btn = document.createElement('button');
                 btn.innerText = config.name;
-                btn.id = `btn-${key}`;
-                btn.onclick = () => showGrade(key);
-                if(key === "grade4") btn.classList.add('active');
+                btn.id = `btn-${config.id}`;
+                btn.onclick = () => showGrade(config.id);
+                if(config.id === "grade4") btn.classList.add('active');
                 menuContainer.appendChild(btn);
 
-                // יצירת הכרטיס
+                // 2. יצירת כרטיס התוכן
                 const card = document.createElement('div');
-                card.className = `canvas-card ${key === "grade4" ? 'active' : ''}`;
-                card.id = `card-${key}`;
+                card.className = `canvas-card ${config.id === "grade4" ? 'active' : ''}`;
+                card.id = `card-${config.id}`;
 
                 let contentHTML = `
                     <div class="class-header">
@@ -135,9 +134,8 @@
                     `;
                 } else {
                     contentHTML += `
-                        <div style="padding:80px; text-align:center; color: #888;">
-                            <p>לא נמצא קישור תקין בטבלה לכיתה זו.</p>
-                            <small>ודא שהקישור נמצא בטור B בגיליון</small>
+                        <div style="padding:100px; text-align:center; color: #888;">
+                            <p>מערכת השעות לכיתה זו תעלה בקרוב.</p>
                         </div>
                     `;
                 }
@@ -146,21 +144,19 @@
                 contentContainer.appendChild(card);
             });
         } catch (e) {
-            document.getElementById('loadingStatus').innerText = "שגיאה בגישה לטבלת גוגל. וודא שהיא פורסמה ל-CSV.";
+            document.getElementById('loadingStatus').innerText = "שגיאה בחיבור לנתוני גוגל. וודא שהטבלה פורסמה כ-CSV.";
         }
     }
 
-    function showGrade(key) {
+    function showGrade(id) {
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        document.getElementById(`btn-${key}`).classList.add('active');
+        document.getElementById(`btn-${id}`).classList.add('active');
         document.querySelectorAll('.canvas-card').forEach(c => c.classList.remove('active'));
-        document.getElementById(`card-${key}`).classList.add('active');
+        document.getElementById(`card-${id}`).classList.add('active');
+        window.scrollTo({ top: document.querySelector('nav').offsetTop - 20, behavior: 'smooth' });
     }
 
     initSite();
 </script>
-</script>
 </body>
 </html>
-
-
