@@ -12,44 +12,34 @@
             --bg: #f0f2f5;
             --white: #ffffff;
         }
-        /* עיצוב הלוגו בפינה השמאלית */
-.school-logo {
-    position: absolute;
-    left: 200px;    /* מרחק מצד שמאל */
-    top: 5px;     /* מרחק מלמעלה */
-    max-height: 300px; /* שנה כאן כדי להגדיל או להקטין */
-    width: auto;
-    z-index: 10;
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
-    z-index: 9999;   /* מבטיח שהלוגו יהיה מעל הרקע ולא יוסתר */
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); /* צל שגורם לו לבלוט */
-}
 
-/* הוספת הגדרה ל-header כדי שהלוגו יתיישר לפיו */
-header {
-    position: relative; 
-}
-
-/* התאמה לנייד - שהלוגו יעבור למרכז ולא יסתיר טקסט */
-@media (max-width: 768px) {
-    .school-logo {
-        position: static;
-        display: block;
-        margin: 0 auto 15px auto;
-        max-height: 80px;
-    }
-}
-                                    
         body { font-family: 'Assistant', sans-serif; margin: 0; background-color: var(--bg); color: #333; }
         
         header { background: var(--primary); color: white; padding: 40px 20px; text-align: center; border-bottom: 5px solid var(--secondary); }
         header h1 { margin: 0; font-size: 2.2rem; }
         header p { margin: 10px 0 0; opacity: 0.9; }
 
+        /* עיצוב סרגל הניווט שכולל את הלוגו */
         nav {
-            background: var(--white); position: sticky; top: 0; z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; justify-content: center;
-            flex-wrap: wrap; padding: 10px; gap: 8px;
+            background: var(--white); 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+            display: flex; 
+            align-items: center; /* יישור אנכי למרכז */
+            justify-content: center; 
+            flex-wrap: wrap; 
+            padding: 5px 20px; 
+            gap: 15px;
+            min-height: 60px;
+        }
+
+        /* עיצוב הלוגו בתוך הפס הלבן */
+        .school-logo {
+            max-height: 50px; /* גובה שמתאים לפס הלבן */
+            width: auto;
+            margin-left: auto; /* דוחף את הלוגו לימין בתוך ה-flex (בגלל RTL זה יראה בצד) */
         }
 
         nav button {
@@ -77,19 +67,24 @@ header {
 
         footer { text-align: center; padding: 30px; color: #888; font-size: 0.9rem; }
 
+        @media (max-width: 768px) {
+            nav { justify-content: center; padding: 10px; }
+            .school-logo { margin: 0 auto 10px auto; width: 100%; text-align: center; max-height: 40px; }
+        }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <header>
-    <header>
-    <img src="logo.png.png" alt="לוגו" class="school-logo">
     <h1>ברוכים הבאים לבית חינוך חב"ד כפר סבא</h1>
     <p>להאיר זה השליחות שלנו</p>
 </header>
 
-<nav id="classMenu"></nav>
+<nav id="classMenu">
+    <img src="logo.png.png" alt="לוגו" class="school-logo">
+</nav>
 
 <div class="container" id="classContent">
     <div id="loadingStatus" style="text-align:center; padding:100px;">טוען נתונים מהמערכת...</div>
@@ -100,10 +95,8 @@ header {
 </footer>
 
 <script>
-    // הקישור הישיר ל-CSV שלך
     const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRzl6akHPYPPZzEqtKtIb1xUfuaGqB_wKRGhZmN76ZXdJQE1eJxUJFWWpDfclLZrWLhglK1tbCoQwfU/pub?output=csv';
 
-    // הגדרות הכיתות והמורים
     const classConfig = [
         { id: "grade1", letter: "א", name: "כיתה א'", teacher: "המורה דניאלה" },
         { id: "grade2", letter: "ב", name: "כיתה ב'", teacher: "המורה חמי" },
@@ -124,18 +117,15 @@ header {
             contentContainer.innerHTML = ''; 
 
             classConfig.forEach((config) => {
-                // חיפוש הקישור בטבלה לפי האות של הכיתה
                 let linkFromSheet = "";
                 for (let i = 1; i < lines.length; i++) {
                     const columns = lines[i].split(',');
-                    // אם הטור הראשון מכיל את האות של הכיתה (א, ב, ג...)
                     if (columns[0] && columns[0].trim().includes(config.letter)) {
                         linkFromSheet = columns[1] ? columns[1].replace(/["']/g, "").trim() : "";
                         break;
                     }
                 }
 
-                // 1. יצירת כפתור בתפריט
                 const btn = document.createElement('button');
                 btn.innerText = config.name;
                 btn.id = `btn-${config.id}`;
@@ -143,7 +133,6 @@ header {
                 if(config.id === "grade4") btn.classList.add('active');
                 menuContainer.appendChild(btn);
 
-                // 2. יצירת כרטיס התוכן
                 const card = document.createElement('div');
                 card.className = `canvas-card ${config.id === "grade4" ? 'active' : ''}`;
                 card.id = `card-${config.id}`;
@@ -173,7 +162,7 @@ header {
                 contentContainer.appendChild(card);
             });
         } catch (e) {
-            document.getElementById('loadingStatus').innerText = "שגיאה בחיבור לנתוני גוגל. וודא שהטבלה פורסמה כ-CSV.";
+            document.getElementById('loadingStatus').innerText = "שגיאה בחיבור לנתוני גוגל.";
         }
     }
 
@@ -182,24 +171,9 @@ header {
         document.getElementById(`btn-${id}`).classList.add('active');
         document.querySelectorAll('.canvas-card').forEach(c => c.classList.remove('active'));
         document.getElementById(`card-${id}`).classList.add('active');
-        window.scrollTo({ top: document.querySelector('nav').offsetTop - 20, behavior: 'smooth' });
     }
 
     initSite();
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
