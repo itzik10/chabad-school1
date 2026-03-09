@@ -71,8 +71,8 @@
 </footer>
 
 <script>
-    // https://docs.google.com/spreadsheets/d/e/2PACX-1vRzl6akHPYPPZzEqtKtIb1xUfuaGqB_wKRGhZmN76ZXdJQE1eJxUJFWWpDfclLZrWLhglK1tbCoQwfU/pub?output=csv
-    const SHEET_CSV_URL = 'כאן_להדביק_את_הקישור_שלך';
+ <script>
+    const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRzl6akHPYPPZzEqtKtIb1xUfuaGqB_wKRGhZmN76ZXdJQE1eJxUJFWWpDfclLZrWLhglK1tbCoQwfU/pub?output=csv';
 
     const classConfig = {
         "grade1": { name: "כיתה א'", teacher: "המורה דניאלה" },
@@ -85,21 +85,29 @@
 
     async function initSite() {
         try {
-            const response = await fetch(SHEET_CSV_URL);
+            const response = await fetch(SHEET_CSV_URL + '&t=' + new Date().getTime());
             const csvText = await response.text();
-            const lines = csvText.split('\n');
+            
+            // פיצול שורות בצורה חזקה
+            const lines = csvText.split(/\r?\n/);
             
             const menuContainer = document.getElementById('classMenu');
             const contentContainer = document.getElementById('classContent');
-            contentContainer.innerHTML = ''; // מנקה את הודעת הטעינה
+            contentContainer.innerHTML = ''; 
 
             Object.keys(classConfig).forEach((key, index) => {
                 const config = classConfig[key];
-                // לוקח את הקישור מהשורה המתאימה באקסל (שורה 2 באקסל היא אינדקס 1 במערך)
-                const rowData = lines[index + 1] ? lines[index + 1].split(',') : [];
-                const linkFromSheet = rowData[1] ? rowData[1].trim() : "";
+                
+                // לוקח את השורה המתאימה (דילוג על כותרת)
+                const currentRow = lines[index + 1] || "";
+                
+                // ניקוי הקישור: לוקח את מה שאחרי הפסיק הראשון ומוריד גרשיים ורווחים
+                let linkFromSheet = "";
+                if (currentRow.includes(',')) {
+                    linkFromSheet = currentRow.split(',')[1].replace(/["']/g, "").trim();
+                }
 
-                // יצירת כפתור
+                // יצירת הכפתור
                 const btn = document.createElement('button');
                 btn.innerText = config.name;
                 btn.id = `btn-${key}`;
@@ -107,7 +115,7 @@
                 if(key === "grade4") btn.classList.add('active');
                 menuContainer.appendChild(btn);
 
-                // יצירת כרטיס
+                // יצירת הכרטיס
                 const card = document.createElement('div');
                 card.className = `canvas-card ${key === "grade4" ? 'active' : ''}`;
                 card.id = `card-${key}`;
@@ -119,7 +127,7 @@
                     </div>
                 `;
 
-                if(linkFromSheet && linkFromSheet.startsWith('http')) {
+                if(linkFromSheet && linkFromSheet.toLowerCase().startsWith('http')) {
                     contentHTML += `
                         <div class="embed-wrapper">
                             <iframe src="${linkFromSheet}" allowfullscreen="allowfullscreen" loading="lazy"></iframe>
@@ -128,7 +136,8 @@
                 } else {
                     contentHTML += `
                         <div style="padding:80px; text-align:center; color: #888;">
-                            <p>התוכן לכיתה זו טרם עודכן בטבלה.</p>
+                            <p>לא נמצא קישור תקין בטבלה לכיתה זו.</p>
+                            <small>ודא שהקישור נמצא בטור B בגיליון</small>
                         </div>
                     `;
                 }
@@ -137,7 +146,7 @@
                 contentContainer.appendChild(card);
             });
         } catch (e) {
-            document.getElementById('loadingStatus').innerText = "שגיאה בטעינת הטבלה. וודא שהקישור תקין ופורסם כ-CSV.";
+            document.getElementById('loadingStatus').innerText = "שגיאה בגישה לטבלת גוגל. וודא שהיא פורסמה ל-CSV.";
         }
     }
 
@@ -146,11 +155,12 @@
         document.getElementById(`btn-${key}`).classList.add('active');
         document.querySelectorAll('.canvas-card').forEach(c => c.classList.remove('active'));
         document.getElementById(`card-${key}`).classList.add('active');
-        window.scrollTo({ top: document.querySelector('nav').offsetTop - 20, behavior: 'smooth' });
     }
 
     initSite();
 </script>
+</script>
 </body>
 </html>
+
 
