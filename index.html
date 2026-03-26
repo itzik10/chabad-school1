@@ -3,226 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>בית חינוך חב"ד כפר סבא</title>
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>מצה שמורה עד הבית - חב"ד שכונת הפרחים</title>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;700&family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #1a4d80;
-            --secondary: #f4b400;
-            --bg: #f0f2f5;
+            --primary-color: #800020;
+            --accent-color: #d4af37;
+            --text-dark: #333;
             --white: #ffffff;
         }
 
-        body { font-family: 'Assistant', sans-serif; margin: 0; background-color: var(--bg); color: #333; }
-        
-        /* כותרת עליונה כחולה */
-        header { 
-            background: var(--primary); 
-            color: white; 
-            padding: 40px 20px; 
-            text-align: center; 
-            border-bottom: 5px solid var(--secondary); 
-        }
-        header h1 { margin: 0; font-size: 2.2rem; }
-        header p { margin: 10px 0 0; opacity: 0.9; }
-
-        /* סרגל ניווט לבן - מקובע לראש הדף */
-        nav {
-            background: var(--white); 
-            position: sticky; 
-            top: 0; 
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            flex-wrap: nowrap; 
-            padding: 0 20px;      /* ביטול ריווח אנכי כדי שהפס לא יתרחב */
-            gap: 12px;
-            height: 70px;         /* גובה קבוע וקשיח לפס הלבן */
-            overflow: visible;    /* מאפשר ללוגו לחרוג מהפס מבלי להגדיל אותו */
-        }
-
-        /* עיצוב הלוגו - פתרון השוליים השקופים */
-        .school-logo {
-            max-height: 200px;    /* גובה מקסימלי גדול כדי לפצות על השקיפות בתמונה */
-            width: auto;
-            margin: -70px 0;      /* Margin שלילי ש"אוכל" את השטח הריק בתמונה ומונע מהפס להתרחב */
-            display: block;
-            z-index: 1010;
+        body {
+            font-family: 'Assistant', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('image_401929.jpg'); /* שם הקובץ שהעלית */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text-dark);
             position: relative;
         }
 
-        /* עיצוב כפתורי הכיתות */
-        nav button {
-            background: #eee; border: none; padding: 10px 18px; border-radius: 25px;
-            cursor: pointer; font-weight: bold; font-family: 'Assistant'; transition: 0.3s; color: var(--primary);
-            white-space: nowrap; /* מונע מהטקסט בכפתור לרדת שורה */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background-color: rgba(255, 255, 255, 0.75);
+            z-index: 1;
         }
 
-        nav button.active { background: var(--primary); color: white; }
-
-        .container { max-width: 1100px; margin: 30px auto; padding: 0 15px; }
-
-        /* כרטיס התוכן (קנבה) */
-        .canvas-card {
-            background: var(--white); border-radius: 15px; overflow: hidden;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.1); display: none; animation: fadeIn 0.5s ease;
+        header {
+            background-color: rgba(128, 0, 32, 0.9);
+            color: var(--white);
+            text-align: center;
+            padding: 40px 20px;
+            border-bottom: 5px solid var(--accent-color);
+            position: relative;
+            z-index: 2;
         }
 
-        .canvas-card.active { display: block; }
-
-        .class-header { padding: 25px; background: #fafafa; border-bottom: 2px solid #eee; }
-        .class-header h2 { margin: 0; color: var(--primary); font-size: 1.8rem; }
-        .class-header h3 { margin: 8px 0 0; color: #666; font-weight: normal; }
-
-        /* מסגרת להטמעת ה-iframe של קנבה */
-        .embed-wrapper { position: relative; width: 100%; height: 0; padding-top: 56.25%; background: #f9f9f9; }
-        .embed-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-
-        footer { text-align: center; padding: 40px; color: #888; font-size: 0.9rem; border-top: 1px solid #ddd; margin-top: 50px; }
-
-        /* התאמה למובייל */
-        @media (max-width: 768px) {
-            nav { flex-wrap: wrap; height: auto; max-height: none; padding: 10px; }
-            .school-logo { 
-                max-height: 120px; 
-                margin: -30px auto 0 auto; 
-                order: -1; /* הלוגו יופיע ראשון בטלפון */
-                width: 100%; 
-                object-fit: contain; 
-            }
-            header h1 { font-size: 1.6rem; }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 2;
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        h1 { color: var(--primary-color); text-align: center; margin-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-bottom: 15px;
+        }
+
+        .btn-submit { background-color: var(--primary-color); color: white; }
+        .btn-whatsapp { background-color: #25D366; color: white; }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            position: relative;
+            z-index: 2;
+        }
+        .footer-name { font-weight: 700; color: var(--primary-color); font-size: 1.2rem; }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>ברוכים הבאים לבית חינוך חב"ד כפר סבא</h1>
-    <p>להאיר זה השליחות שלנו</p>
+    <div style="font-size: 2.5rem; font-weight: 900;">חב"ד</div>
+    <div>כפר סבא - שכונת הפרחים</div>
 </header>
 
-<nav id="classMenu">
-    </nav>
+<div class="container">
+    <h1>מצה שמורה עד הבית!</h1>
+    
+    <form id="orderForm" action="https://script.google.com/macros/s/AKfycbyfiQAfzWj5fx30QDSwMfEtzfcf2m1p0dnEpKBrVNrwU9h3xIUnTIi7uUwXGdz0L0QWIQ/exec" method="POST">
+        <div class="form-group">
+            <label for="name">שם מלא:</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+            <label for="phone">טלפון:</label>
+            <input type="tel" id="phone" name="phone" required>
+        </div>
+        <div class="form-group">
+            <label for="address">כתובת למשלוח:</label>
+            <textarea id="address" name="address" rows="2" placeholder="רחוב, מספר בית, קומה" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-submit">שלח הרשמה</button>
+    </form>
 
-<div class="container" id="classContent">
-    <div id="loadingStatus" style="text-align:center; padding:100px; font-size: 1.2rem;">טוען נתונים מהמערכת...</div>
+    <div id="status" style="text-align: center; display: none; font-weight: bold; margin-top: 10px;"></div>
+
+    <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
+    
+    <a href="https://wa.me/972534415762" class="btn btn-whatsapp" target="_blank">שאלות? דברו איתנו בווטסאפ</a>
 </div>
 
 <footer>
-    © All Rights Reserved to Itzik Feldman | בית ספר חב"ד כפר סבא | 2026
+    <div class="footer-name">itzik feldman</div>
+    <div>בית חב"ד שכונת הפרחים | הרב איציק פלדמן</div>
 </footer>
 
 <script>
-    // קישור ה-CSV מהגוגל שיטס שלך
-    const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRzl6akHPYPPZzEqtKtIb1xUfuaGqB_wKRGhZmN76ZXdJQE1eJxUJFWWpDfclLZrWLhglK1tbCoQwfU/pub?output=csv';
-
-    // הגדרת נתוני הכיתות - ניתן לשנות שמות מורים כאן
-    const classConfig = [
-        { id: "grade1", letter: "א", name: "כיתה א'", teacher: "המורה דניאלה" },
-        { id: "grade2", letter: "ב", name: "כיתה ב'", teacher: "המורה חמי" },
-        { id: "grade3", letter: "ג", name: "כיתה ג'", teacher: "הרב שניאור" },
-        { id: "grade4", letter: "ד", name: "כיתה ד'", teacher: "הרב איציק" },
-        { id: "grade5", letter: "ה", name: "כיתה ה'", teacher: "הרב מאיר" },
-        { id: "grade6", letter: "ו", name: "כיתה ו'", teacher: "הרב יהודה" }
-    ];
-
-    async function initSite() {
-        try {
-            // משיכת הנתונים מהאקסל עם מנגנון למניעת שמירה בזיכרון ישן (Cache)
-            const response = await fetch(SHEET_CSV_URL + '&t=' + new Date().getTime());
-            const csvText = await response.text();
-            const lines = csvText.split(/\r?\n/);
-            
-            const menuContainer = document.getElementById('classMenu');
-            const contentContainer = document.getElementById('classContent');
-            
-            menuContainer.innerHTML = ''; 
-            contentContainer.innerHTML = ''; 
-
-            // יצירת הכפתורים והכרטיסים לכל כיתה
-            classConfig.forEach((config) => {
-                let linkFromSheet = "";
-                // חיפוש הקישור בשורות האקסל לפי אות הכיתה בטור א'
-                for (let i = 1; i < lines.length; i++) {
-                    const columns = lines[i].split(',');
-                    if (columns[0] && columns[0].trim().includes(config.letter)) {
-                        linkFromSheet = columns[1] ? columns[1].replace(/["']/g, "").trim() : "";
-                        break;
-                    }
-                }
-
-                // בניית כפתור בתפריט
-                const btn = document.createElement('button');
-                btn.innerText = config.name;
-                btn.id = `btn-${config.id}`;
-                btn.onclick = () => showGrade(config.id);
-                if(config.id === "grade4") btn.classList.add('active'); // ברירת מחדל כיתה ד'
-                menuContainer.appendChild(btn);
-
-                // בניית כרטיס התצוגה
-                const card = document.createElement('div');
-                card.className = `canvas-card ${config.id === "grade4" ? 'active' : ''}`;
-                card.id = `card-${config.id}`;
-
-                let contentHTML = `
-                    <div class="class-header">
-                        <h2>${config.name}</h2>
-                        <h3>מחנך/ת: <strong>${config.teacher}</strong></h3>
-                    </div>
-                `;
-
-                // אם נמצא קישור תקין, נטמיע את ה-Iframe
-                if(linkFromSheet && linkFromSheet.toLowerCase().startsWith('http')) {
-                    contentHTML += `
-                        <div class="embed-wrapper">
-                            <iframe src="${linkFromSheet}" allowfullscreen="allowfullscreen" loading="lazy"></iframe>
-                        </div>
-                    `;
-                } else {
-                    contentHTML += `
-                        <div style="padding:100px; text-align:center; color: #888;">
-                            <p>מערכת השעות לכיתה זו תעלה בקרוב.</p>
-                        </div>
-                    `;
-                }
-
-                card.innerHTML = contentHTML;
-                contentContainer.appendChild(card);
-            });
-
-            // הוספת הלוגו בסוף התפריט (מצד שמאל של הכפתורים)
-            const logoImg = document.createElement('img');
-            logoImg.src = 'logo.png.png'; // שם הקובץ ב-GitHub
-            logoImg.alt = 'לוגו בית הספר';
-            logoImg.className = 'school-logo';
-            menuContainer.appendChild(logoImg);
-
-        } catch (e) {
-            document.getElementById('loadingStatus').innerText = "שגיאה בחיבור לנתוני גוגל. וודא שהטבלה פורסמה כ-CSV.";
-        }
-    }
-
-    // פונקציה למעבר בין כיתות
-    function showGrade(id) {
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        const activeBtn = document.getElementById(`btn-${id}`);
-        if(activeBtn) activeBtn.classList.add('active');
-        
-        document.querySelectorAll('.canvas-card').forEach(c => c.classList.remove('active'));
-        const activeCard = document.getElementById(`card-${id}`);
-        if(activeCard) activeCard.classList.add('active');
-        
-        // גלילה חלקה לראש התוכן במובייל
-        if(window.innerWidth < 768) {
-             window.scrollTo({ top: document.querySelector('nav').offsetTop, behavior: 'smooth' });
-        }
-    }
-
-    initSite();
-</script>
-</body>
-</html>
+    const form = document
